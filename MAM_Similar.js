@@ -163,6 +163,7 @@ function buildTorQuery(obj, prefix = 'tor') {
 
     const query_params = buildTorQuery(params);
     const searchUrl = `https://www.myanonamouse.net/tor/js/loadSearch2.php?${query_params}`;
+    const browseUrl = `https://www.myanonamouse.net/tor/browse.php?${query_params}`;
     const tableHtml = await fetchAndFilterTable(searchUrl, search_torrent_class, torrent_exclude_identifier);
 
     var other_torrents = document.createElement('div');
@@ -172,7 +173,7 @@ function buildTorQuery(obj, prefix = 'tor') {
 
     var other_torrents_left = document.createElement('div');
     other_torrents_left.className = 'torDetLeft';
-    other_torrents_left.innerHTML = `Similar Torrents:<br><a href='${searchUrl}'>[Search]</a>`;
+    other_torrents_left.innerHTML = `Similar Torrents:<br><a href='${browseUrl}'>[Search]</a>`;
 
     var other_torrents_right = document.createElement('div');
     other_torrents_right.className = 'torDetRight';
