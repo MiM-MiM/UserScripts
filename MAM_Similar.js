@@ -14,6 +14,8 @@
 // @downloadURL  https://openuserjs.org/install/MiM/MaM_Similar_Torrents.user.js
 // ==/UserScript==
 
+/* jshint esversion: 11 */
+
 function fetchAndFilterTable(url, tableClassName, excludeRowClassOrId, matchTitle) {
   return new Promise((resolve, reject) => {
     GM.xmlHttpRequest({
@@ -55,7 +57,6 @@ function fetchAndFilterTable(url, tableClassName, excludeRowClassOrId, matchTitl
             if (row.id === excludeRowClassOrId || matchTitle != torTitle) {
               row.remove();
             }
-            torTitle = row.querySelector('a.torTitle');
           });
 
           resolve(table.outerHTML);
