@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         MaM Similar Torrents
 // @namespace    https://www.myanonamouse.net/
-// @version      1.0
+// @version      1.1
 // @description  Add Similar Torrents to MaM.
 // @author       MiM
 // @match        https://www.myanonamouse.net/t/*
@@ -14,7 +14,7 @@
 // @downloadURL  https://openuserjs.org/install/MiM/MaM_Similar_Torrents.user.js
 // ==/UserScript==
 
-function fetchAndFilterTable(url, tableClassName, excludeRowClassOrId) {
+function fetchAndFilterTable(url, tableClassName, excludeRowClassOrId, matchTitle) {
   return new Promise((resolve, reject) => {
     GM.xmlHttpRequest({
       method: "GET",
@@ -46,11 +46,16 @@ function fetchAndFilterTable(url, tableClassName, excludeRowClassOrId) {
               rows.shift();
             }
           }
-
+          var torTitle;
           rows.forEach(row => {
-            if (row.id === excludeRowClassOrId || row.classList.contains(excludeRowClassOrId)) {
+            torTitle = row.querySelector('a.torTitle');
+            if (torTitle) {
+              torTitle = torTitle.textContent.trim();
+            }
+            if (row.id === excludeRowClassOrId || matchTitle != torTitle) {
               row.remove();
             }
+            torTitle = row.querySelector('a.torTitle');
           });
 
           resolve(table.outerHTML);
@@ -126,9 +131,10 @@ function buildTorQuery(obj, prefix = 'tor') {
 
     const torrent_id = window.location.pathname.split('/').filter(Boolean).pop();
     let title_author = '';
+    let title = '';
     const titleSpan = document.querySelector('span.TorrentTitle');
     if (titleSpan) {
-      title_author = titleSpan.textContent.trim();
+      title = titleSpan.textContent.trim();
     }
 
     const authorLinks = document.querySelectorAll('.torDetRight.torAuthors a.altColor');
@@ -138,7 +144,7 @@ function buildTorQuery(obj, prefix = 'tor') {
       ).filter(Boolean).join(' ');
 
       if (authorsList) {
-        title_author = `${title_author} ${authorsList}`;
+        title_author = `${title} ${authorsList}`;
       }
     }
 
@@ -164,7 +170,8 @@ function buildTorQuery(obj, prefix = 'tor') {
     const query_params = buildTorQuery(params);
     const searchUrl = `https://www.myanonamouse.net/tor/js/loadSearch2.php?${query_params}`;
     const browseUrl = `https://www.myanonamouse.net/tor/browse.php?${query_params}`;
-    const tableHtml = await fetchAndFilterTable(searchUrl, search_torrent_class, torrent_exclude_identifier);
+
+    const tableHtml = await fetchAndFilterTable(searchUrl, search_torrent_class, torrent_exclude_identifier, title);
 
     var other_torrents = document.createElement('div');
     other_torrents.id = 'injected-similar-torrents';
