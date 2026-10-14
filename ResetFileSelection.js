@@ -46,7 +46,7 @@
     }
 
     function scanAndApply() {
-        const fileInputs = document.querySelectorAll('input[type="file"]');
+        const fileInputs = document.querySelectorAll('form input[type="file"]');
         fileInputs.forEach(addResetButton);
     }
 
