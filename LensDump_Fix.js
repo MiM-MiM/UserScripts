@@ -48,7 +48,6 @@
 
                             for (const anchor of anchors) {
                                 const href = anchor.getAttribute('href');
-                                console.log(href)
                                 if (USE_MD && href && href.includes(String(id)) && href.includes(".md.")) {
                                     matchedHref = href;
                                     break;
