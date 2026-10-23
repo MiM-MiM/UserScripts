@@ -16,6 +16,7 @@
     'use strict';
 
     const CACHE_NAME = 'lensdump-media-cache';
+    const USE_MD = true;
     const MAX_CACHE_ITEMS = 200;
     const targetPattern = /^https:\/\/[a-z0-9]+\.l3n\.co\/(?:i\/)?([A-Za-z0-9]+)\..*$/;
 
@@ -42,13 +43,16 @@
                             const htmlText = response.responseText;
                             const parser = new DOMParser();
                             const doc = parser.parseFromString(htmlText, 'text/html');
-
-                            const anchors = doc.querySelectorAll('a[data-action="download"]');
+                            const anchors = doc.querySelectorAll("#tab-embeds a[download]");
                             let matchedHref = null;
 
                             for (const anchor of anchors) {
                                 const href = anchor.getAttribute('href');
-                                if (href && href.includes(String(id))) {
+                                console.log(href)
+                                if (USE_MD && href && href.includes(String(id)) && href.includes(".md.")) {
+                                    matchedHref = href;
+                                    break;
+                                } else if (!USE_MD && href && href.includes(String(id)) && !href.includes(".md.")) {
                                     matchedHref = href;
                                     break;
                                 }
@@ -108,7 +112,7 @@
                     const url = await getDownloadLink(imageId);
                     if (url) {
                         // Can also uncomment this and just replace the link with the timed one, ignoring cache.
-                        // img.src = url;
+                        //img.src = url;
                         GM_xmlhttpRequest({
                             method: "GET",
                             url: url,
